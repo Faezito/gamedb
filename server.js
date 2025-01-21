@@ -45,7 +45,9 @@ app.use(helmet.contentSecurityPolicy({
 }))
 
 // Habilitar CORS e body parser
-app.use(cors());
+app.use(cors({
+    origin: 'https://gamedb-y1bu.onrender.com'    
+}));
 app.use(bodyParser.json());
 
 app.get('/', (req,res) => {
