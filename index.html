@@ -83,44 +83,44 @@
 
     <div id="games-container"></div>
 
-<!-- Modal de edição -->
-<div id="editModal" class="modalEdit">
-    <div class="modal-content">
-        <span class="close-btn" onclick="fecharModal()">&times;</span>
-        <h2>Editar Jogo</h2>
-        <form id="editForm">
-            <input type="hidden" id="edit-id">
+            <!-- Modal de edição -->
+            <div id="editModal" class="modalEdit">
+                <div class="modal-content">
+                    <span class="close-btn" onclick="fecharModal()">&times;</span>
+                    <h2>Editar Jogo</h2>
+                    <form id="editForm">
+                        <input type="hidden" id="edit-id">
 
-            <label>Zerado?</label>
-            <input type="checkbox" id="edit-zerado">
-            
-            <label>Quando?</label>
-            <input type="date" id="edit-finishDate"> <br>
+                        <label>Zerado?</label>
+                        <input type="checkbox" id="edit-zerado">
+                        
+                        <label>Quando?</label>
+                        <input type="date" id="edit-finishDate"> <br>
 
-            <label>100% concluído?</label>
-            <input type="checkbox" id="edit-platina">
+                        <label>100% concluído?</label>
+                        <input type="checkbox" id="edit-platina">
 
-            <label>Quando?</label>
-            <input type="date" id="edit-platinaDate"> <br>
+                        <label>Quando?</label>
+                        <input type="date" id="edit-platinaDate"> <br>
 
-            <label>Nota:</label>
-            <input type="range" name="nota1" id="edit-nota" min="0" max="10" value="5" step="0.5">
-            <span id="valor1">5</span> 
-    
-            <script>
-                const range1 = document.getElementById("edit-nota");
-                const valor1 = document.getElementById("valor1");
-        
-                // Atualiza o valor exibido quando o range for alterado
-                range1.addEventListener("input", function() {
-                    valor1.textContent = range1.value;
-                });
-            </script>
+                        <label>Nota:</label>
+                        <input type="range" name="nota1" id="edit-nota" min="0" max="10" value="5" step="0.5">
+                        <span id="valor1">5</span> 
+                
+                        <script>
+                            const range1 = document.getElementById("edit-nota");
+                            const valor1 = document.getElementById("valor1");
+                    
+                            // Atualiza o valor exibido quando o range for alterado
+                            range1.addEventListener("input", function() {
+                                valor1.textContent = range1.value;
+                            });
+                        </script>
 
-            <button type="submit">Salvar Alterações</button>
-        </form>
-    </div>
-</div>
+                        <button type="submit">Salvar Alterações</button>
+                    </form>
+                </div>
+            </div>
 
     <script src="script.js"></script>
 </body>

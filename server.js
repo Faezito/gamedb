@@ -23,6 +23,12 @@ client.connect()
 const app = express();
 const port = 3000;
 
+//Habilitando fontes do Google
+app.use((req, res, next) => {
+    res.setHeader("Content-Security-Policy", "default-src 'none'; font-src 'self' https://fonts.gstatic.com;");
+    next();
+});
+
 // Habilitar CORS e body parser
 app.use(cors());
 app.use(bodyParser.json());
@@ -105,6 +111,6 @@ app.put('/games/:id', async (req, res) => {
 });
 
 // Iniciar o servidor
-app.listen(port, () => {
+app.listen(3000, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
 });
