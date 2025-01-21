@@ -1,7 +1,10 @@
 const express = require('express');
 const { Client } = require('pg');
 const cors = require('cors');
+const path = require('path')
 const bodyParser = require('body-parser');
+
+app.use(express.static(path.join(__dirname, 'public')))
 
 // Conexão com o PostgreSQL
 const connectionString = 'postgresql://root:3YFjjukSDbjeyycEWchNMlShyQbs2l8b@dpg-cu7sv1d6l47c73am90jg-a.oregon-postgres.render.com/gamedb_nklz';
