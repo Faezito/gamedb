@@ -99,7 +99,7 @@ app.post('/games', async (req, res) => {
         res.status(200).send({ message: 'Jogo adicionado com sucesso!' });
     } catch (err) {
         console.error('Erro ao inserir jogo:', err);
-        res.status(500).send({ error: 'Erro ao adicionar jogo' });
+        res.status(500).send({ error: 'Erro ao adicionar jogo 1' });
     }
 });
 
