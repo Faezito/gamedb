@@ -26,7 +26,7 @@ client.connect()
 const app = express();
 const port = 3000;
 
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, '/')))
 //Habilitando fontes do Google
 app.use((req, res, next) => {
     res.setHeader("Content-Security-Policy", "default-src 'none'; font-src 'self' https://fonts.gstatic.com;");
@@ -37,10 +37,10 @@ app.use(helmet.contentSecurityPolicy({
     directives: {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "https://fonts.googleapis.com"],
-        scriptSrc: ["'self'", "https://gamedb-y1bu.onrender.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://gamedb-y1bu.onrender.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         objectSrc: ["'none'"],
-        upgradeInsecureRequests: [],
+        upgradeInsecureRequests: []
     }
 }))
 
