@@ -3,6 +3,7 @@ const { Client } = require('pg');
 const cors = require('cors');
 const path = require('path')
 const bodyParser = require('body-parser');
+const helmet = require('helmet')
 
 
 // Conexão com o PostgreSQL
@@ -31,6 +32,17 @@ app.use((req, res, next) => {
     res.setHeader("Content-Security-Policy", "default-src 'none'; font-src 'self' https://fonts.gstatic.com;");
     next();
 });
+
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "https://fonts.googleapis.com"],
+        scriptSrc: ["'self'", "https://gamedb-y1bu.onrender.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+    }
+}))
 
 // Habilitar CORS e body parser
 app.use(cors());
