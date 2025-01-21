@@ -4,7 +4,6 @@ const cors = require('cors');
 const path = require('path')
 const bodyParser = require('body-parser');
 
-app.use(express.static(path.join(__dirname, 'public')))
 
 // Conexão com o PostgreSQL
 const connectionString = 'postgresql://root:3YFjjukSDbjeyycEWchNMlShyQbs2l8b@dpg-cu7sv1d6l47c73am90jg-a.oregon-postgres.render.com/gamedb_nklz';
@@ -17,15 +16,16 @@ const client = new Client({
 });
 
 client.connect()
-    .then(() => console.log('Conectado ao DB PostgreSQL'))
-    .catch(err => {
-        console.error('Erro ao conectar à DB:', err);
-        process.exit(1);
-    });
+.then(() => console.log('Conectado ao DB PostgreSQL'))
+.catch(err => {
+    console.error('Erro ao conectar à DB:', err);
+    process.exit(1);
+});
 
 const app = express();
 const port = 3000;
 
+app.use(express.static(path.join(__dirname, 'public')))
 //Habilitando fontes do Google
 app.use((req, res, next) => {
     res.setHeader("Content-Security-Policy", "default-src 'none'; font-src 'self' https://fonts.gstatic.com;");
