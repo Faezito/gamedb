@@ -1,107 +1,108 @@
 const express = require('express');
-const mysql = require('mysql2');
+const { Client } = require('pg');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+
+// Conexão com o PostgreSQL
+const connectionString = 'postgresql://root:3YFjjukSDbjeyycEWchNMlShyQbs2l8b@dpg-cu7sv1d6l47c73am90jg-a.oregon-postgres.render.com/gamedb_nklz';
+
+const client = new Client({
+    connectionString: connectionString,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+
+client.connect()
+    .then(() => console.log('Conectado ao DB PostgreSQL'))
+    .catch(err => {
+        console.error('Erro ao conectar à DB:', err);
+        process.exit(1);
+    });
 
 const app = express();
 const port = 3000;
 
-// Habilitar CORS para permitir requisições do frontend
+// Habilitar CORS e body parser
 app.use(cors());
-app.use(bodyParser.json())
-
-// conexão com o banco de dados MySQL
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',     
-    password: 'MySQL#2025',     
-    database: 'gamedb',  
-});
-
-// Conectar ao banco de dados
-db.connect((err) => {
-    if (err) {
-        console.error('Erro ao conectar ao banco de dados: ' + err.stack);
-        process.exit(1);
-    }
-    console.log('Conectado ao banco de dados');
-});
+app.use(bodyParser.json());
 
 // Rota para buscar os jogos
-app.get('/games', (req, res) => {
-    const sql = 'SELECT * FROM games';
-    db.query(sql, (err, results) => {
-        if (err) {
-            res.status(500).send({ message: 'Erro ao buscar jogos', error: err });
-            return;
-        }
-        res.json(results);
-    });
+app.get('/games', async (req, res) => {
+    try {
+        const result = await client.query('SELECT * FROM games');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).send({ message: 'Erro ao buscar jogos', error: err });
+    }
 });
 
-//Rota para adicionar jogos
-app.post('/games', (req, res) => {
-    const { title,plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa } = req.body;
+// Rota para adicionar jogos
+app.post('/games', async (req, res) => {
+    const { title, plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa } = req.body;
 
-    const queryCheck = 'SELECT * FROM games WHERE title = ?';
+    try {
+        // Verificar se o jogo já existe
+        const queryCheck = 'SELECT * FROM games WHERE title = $1';
+        const result = await client.query(queryCheck, [title]);
 
-    const platinaDateValue = platinaDate? platinaDate: null
-    const jogando = zerado ? finishDate : null
-
-    db.query(queryCheck, [title], (err, result) => {
-
-        if (err) {
-            res.setHeader('Content-Type', 'application/json')
-            console.log('Erro ao conferir duplicidade:', err);
-            return res.status(500).send('Erro ao conferir duplicidade')
+        if (result.rows.length > 0) {
+            return res.status(400).json({ error: 'Jogo já adicionado' });
         }
 
-        if (result.length > 0) {
-            console.log('O jogo já existe')
-            res.setHeader('Content-Type', 'application/json')
-            return res.status(400).send({ error: 'Jogo já adicionado'})
-        }
+        const queryInsert = `
+            INSERT INTO games (title, plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        `;
 
-        const queryInsert = 'INSERT INTO games (title,plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa) VALUES (?,?,?,?,?,?,?,?,?,?,?)'
-        
-        db.query(queryInsert, [title,plataforma, genre, release_date, description, zerado? 1:0, jogando, platina? 1:0, platinaDateValue, nota, capa], (err, result) => {
-            if (err) {
-                console.log('Erro ao inserir jogo:', err)
-                res.status(500).send('Erro ao adicionar jogo')
+        await client.query(queryInsert, [
+            title, 
+            plataforma, 
+            genre, 
+            release_date, 
+            description, 
+            zerado ? true : false, 
+            finishDate || null, 
+            platina ? true : false, 
+            platinaDate || null, 
+            nota, 
+            capa
+        ]);
 
-            }
+        res.status(200).send({ message: 'Jogo adicionado com sucesso!' });
+    } catch (err) {
+        console.error('Erro ao inserir jogo:', err);
+        res.status(500).send({ error: 'Erro ao adicionar jogo' });
+    }
+});
 
-            res.setHeader('Content-Type', 'application/json')           
-            res.status(200).send({ message: 'Jogo adicionado com sucesso!' })
-        })
-    })
-})
+// Rota para editar jogo
+app.put('/games/:id', async (req, res) => {
+    const { id } = req.params;
+    const { zerado, finishDate, platina, platinaDate, nota } = req.body;
 
-// editar
+    try {
+        const queryUpdate = `
+            UPDATE games
+            SET zerado = $1, finishDate = $2, platina = $3, platinaDate = $4, nota = $5
+            WHERE id = $6
+        `;
 
-app.put('/games/:id', (req,res)=>{
-    const {id} = req.params
-    const {zerado, finishDate, platina, platinaDate, nota} = req.body
+        await client.query(queryUpdate, [
+            zerado ? true : false, 
+            zerado ? finishDate || null : null, 
+            platina ? true : false, 
+            platinaDate || null, 
+            nota, 
+            id
+        ]);
 
-    const platinaDateValue = platinaDate? platinaDate: null
-    const jogando = zerado ? finishDate : null
-
-    const query = `
-    UPDATE games
-    SET zerado = ?, finishDate = ?, platina = ?, platinaDate = ?, nota = ?
-    WHERE id = ?
-    `
-    db.query(query, [zerado? 1:0, jogando, platina? 1:0, platinaDateValue, nota, id], (err, result) => {
-        if (err) {
-            res.setHeader('Content-Type', 'application/json')
-            return res.status(500).json('Erro ao atualizar o jogo');
-        }
-
-        res.setHeader('Content-Type', 'application/json')
         res.send('Jogo atualizado com sucesso!');
-    });
-           
-})
+    } catch (err) {
+        console.error('Erro ao atualizar jogo:', err);
+        res.status(500).json({ error: 'Erro ao atualizar o jogo' });
+    }
+});
 
 // Iniciar o servidor
 app.listen(port, () => {
