@@ -33,6 +33,10 @@ app.use((req, res, next) => {
 app.use(cors());
 app.use(bodyParser.json());
 
+app.get('/', (req,res) => {
+    res.sendFile(path.join(__dirname, 'index.html'))
+})
+
 // Rota para buscar os jogos
 app.get('/games', async (req, res) => {
     try {
@@ -111,6 +115,6 @@ app.put('/games/:id', async (req, res) => {
 });
 
 // Iniciar o servidor
-app.listen(3000, () => {
+app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
 });
