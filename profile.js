@@ -59,7 +59,7 @@ fetch('https://gamedb-y1bu.onrender.com/games', {
 
 
 // buscar jogador
-fetch('http://gamedb-y1bu.onrender.com/users', {
+/* fetch('http://gamedb-y1bu.onrender.com/users', {
     method: 'GET',
     headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -79,7 +79,7 @@ fetch('http://gamedb-y1bu.onrender.com/users', {
     }
 })
 .catch(err => console.error('Erro ao obter dados do usuário', err))
-
+*/
 
     // adicionar jogos
 
