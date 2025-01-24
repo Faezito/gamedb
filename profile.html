@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameDB</title>
+    <link rel="stylesheet" href="profile.css">
+    <script src="addGame/form.js" defer></script>
+</head>
+<body>
+    <nav>
+        <div class="openModalButton">
+            <button id="openModalButton">&plus;</button>
+        </div>
+        <h1>GameDB</h1>
+    </nav>
+
+            <div id="gameModal" class="modal">
+                <div class="modal-content">
+                    <span id="closeModalButton" class="close">&times;</span>
+                    <h1>Adicionar Jogo</h1>
+                    <form id="addGame">
+                        <label for="title">Título:</label>
+                        <input type="text" id="title" name="title" required> <br><br>
+                
+                        <label for="capa">Capa (URL):</label>
+                        <input type="text" name="capa" id="capa"><br><br>
+                
+                        <label for="plataforma">Plataforma:</label>
+                        <select name="plataforma" id="plataforma">
+                            <option value="PC">PC</option>
+                            <option value="PlayStation">PlayStation</option>
+                            <option value="XBOX">XBOX</option>
+                            <option value="Nintendo">Nintendo</option>
+                            <option value="Emulador">Emulador</option>
+                            <option value="Mobile">Mobile</option>
+                        </select>
+                
+                        <br><br>
+                
+                        <label for="genre">Gênero:</label>
+                        <input type="text" id="genre" name="genre" required> <br><br>
+                
+                        <label for="release">Data de lançamento:</label>
+                        <input type="date" id="release" name="release" required> <br><br>
+                
+                        <label for="description">Sinopse:</label>
+                        <textarea id="description" name="description" required></textarea> <br><br>
+                
+                        <label for="zerado">Zerado?</label>
+                        <input type="checkbox" name="zerado" id="zerado"> <br><br>
+                
+                        <label for="finishDate">Data de conclusão:</label>
+                        <input type="date" name="finishDate" id="finishDate"><br><br>
+                
+                        <label for="platina">100%?</label>
+                        <input type="checkbox" name="platina" id="platina"> <br><br>
+                
+                        <label for="platinaDate">Data da platina/100%:</label>
+                        <input type="date" name="platinaDate" id="platinaDate">
+                
+                        <label for="nota">Nota:</label>
+                        <input type="range" name="nota" id="nota" min="0" max="10" value="5"  step="0.5" required>
+                        <span id="valor">5</span> <!-- Exibe o valor atual -->
+                
+                        <script>
+                            const range = document.getElementById("nota");
+                            const valor = document.getElementById("valor");
+                    
+                            // Atualiza o valor exibido quando o range for alterado
+                            range.addEventListener("input", function() {
+                                valor.textContent = range.value;
+                            });
+                        </script>
+                
+                        <button type="submit">Salvar</button>
+                    </form>               
+
+
+                </div>
+
+            </div>
+
+    <div id="games-container"></div>
+
+            <!-- Modal de edição -->
+            <div id="editModal" class="modalEdit">
+                <div class="modal-content">
+                    <span class="close-btn" onclick="fecharModal()">&times;</span>
+                    <h2>Editar Jogo</h2>
+                    <form id="editForm">
+                        <input type="hidden" id="edit-id">
+
+                        <label>Zerado?</label>
+                        <input type="checkbox" id="edit-zerado">
+                        
+                        <label>Quando?</label>
+                        <input type="date" id="edit-finishDate"> <br>
+
+                        <label>100% concluído?</label>
+                        <input type="checkbox" id="edit-platina">
+
+                        <label>Quando?</label>
+                        <input type="date" id="edit-platinaDate"> <br>
+
+                        <label>Nota:</label>
+                        <input type="range" name="nota1" id="edit-nota" min="0" max="10" value="5" step="0.5">
+                        <span id="valor1">5</span> 
+                
+                        <script>
+                            const range1 = document.getElementById("edit-nota");
+                            const valor1 = document.getElementById("valor1");
+                    
+                            // Atualiza o valor exibido quando o range for alterado
+                            range1.addEventListener("input", function() {
+                                valor1.textContent = range1.value;
+                            });
+                        </script>
+
+                        <button type="submit">Salvar Alterações</button>
+                    </form>
+                </div>
+            </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

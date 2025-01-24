@@ -1,9 +1,12 @@
 const express = require('express');
-const { Client } = require('pg');
+const { Client, Pool } = require('pg');
 const cors = require('cors');
 const path = require('path')
 const bodyParser = require('body-parser');
 const helmet = require('helmet')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
+require('dotenv').config()
 
 
 // Conexão com o PostgreSQL
@@ -27,6 +30,8 @@ const app = express();
 const port = 3000;
 
 app.use(express.static(path.join(__dirname, '/')))
+
+
 //Habilitando fontes do Google
 app.use((req, res, next) => {
     res.setHeader("Content-Security-Policy", "default-src 'none'; font-src 'self' https://fonts.gstatic.com;");
@@ -52,6 +57,14 @@ app.use(bodyParser.json());
 
 app.get('/', (req,res) => {
     res.sendFile(path.join(__dirname, 'index.html'))
+})
+
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'))
+})
+
+app.get('/profile', (req,res) => {
+    res.sendFile(path.join(__dirname, 'profile.html'))
 })
 
 // Rota para buscar os jogos
@@ -130,6 +143,81 @@ app.put('/games/:id', async (req, res) => {
         res.status(500).json({ error: 'Erro ao atualizar o jogo' });
     }
 });
+
+
+// cadastrar usuário
+
+app.post('/register', async(req,res) => {
+    const { username, name, email, pass } = req.body
+
+    try{
+        const userExists = await client.query('SELECT * FROM users WHERE username = $1 OR email = $2', [username, email])
+
+        if(userExists.rows.length > 0){
+            return res.status(400).json({message: 'O usuário já existe.'})
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const senha = await bcrypt.hash(pass, salt)
+
+        await client.query('INSERT INTO users (username, name, email, pass) VALUES ($1, $2, $3, $4)', [username, name, email, senha]) 
+        return res.status(201).json({message: 'Usuário cadastrado com sucesso!'})
+    } catch (err){
+        console.error('Erro na base de dados de cadastro', err)
+        res.status(500).json({message: 'Erro no servidor de cadastro'})
+    }
+})
+
+app.post('/login', async(req, res)=> {
+    const {username, pass} = req.body
+
+    if(!email || !pass) {
+        return res.status(400).json({message:'Usuário ou senha incorretos.'})
+    }
+
+    try {
+        const user = await client.query('SELECT * FROM users WHERE username = $1', [username])
+
+        if (user.rows.length===0){
+            res.status(400).json({message: 'Usuário não encontrado.'})
+        }
+
+        const validPass = await bcrypt.compare(pass, user.rows[0].pass)
+
+        if(!validPass){
+            return req.status(400).json({message: 'Usuário ou senha incorretos.'})
+        }
+
+        const token = jwt.sign(
+            {userId: user.rows[0].id, email: user.rows[0].email},
+            process.env.JWT_SECRET,
+            {expiresIn: '2h'}
+        )
+
+        res.status(200).json({message: 'Logado com sucesso', token})
+    }catch(err){
+        console.error(err)
+        return res.status(400).json({message: 'Erro no servidor de login.'})
+    }
+})
+
+app.get('/protected-route', (req,res)=> {
+    const token = req.headers['authorization']
+
+    if(!token){
+        return res.status(403).json({message: 'Token necessário'})
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if(err){
+            return res.status(401).json({message: 'Token inválido'})
+        }
+
+        res.json({message: 'Bem-vindo à rota protegida!', user: decoded})
+    })
+})
+
+
 
 // Iniciar o servidor
 app.listen(port, () => {
