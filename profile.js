@@ -1,3 +1,5 @@
+const { response } = require("express");
+
 // buscar os jogos do backend
 fetch('https://gamedb-y1bu.onrender.com/games', {
     method: 'GET',
@@ -55,6 +57,31 @@ fetch('https://gamedb-y1bu.onrender.com/games', {
     })
 .catch(error => console.error('Erro ao carregar os jogos:', error));
 
+
+// buscar jogador
+fetch('http://gamedb-y1bu.onrender.com/users', {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+})
+.then(response => {
+    if(!response.ok){
+        throw new Error('Não consegui buscar os dados do usuário')
+    }
+    return response.json()
+})
+.then(data => {
+    const title = document.getElementById('nameTitle')
+
+    const colocarNome = () => {
+        title.textContent = data.username
+    }
+})
+.catch(err){
+    console.error('Erro ao obter dados do usuário', err)
+}
+
     // adicionar jogos
 
 const openModalButton = document.getElementById('openModalButton');
@@ -103,6 +130,8 @@ function fecharModal(){
     document.getElementById('editModal').style.display = 'none';
 }
 
+
+//concluir edição
 document.getElementById('editForm').addEventListener('submit', (e) => {
     e.preventDefault()
 
@@ -137,6 +166,8 @@ document.getElementById('editForm').addEventListener('submit', (e) => {
     .catch(error => console.error('Erro ao atualizar o jogo:', error));
 })
 
+//Verificar JWT
+
 function checkToken(){
     if(!localStorage.getItem('token')){
         window.location.href = '/login.html'
@@ -155,7 +186,7 @@ function checkToken(){
 
         const data = await response.json()
         if (response.status===200){
-            document.getElementById('nameTitle').textContent = `Olá, ${data.username}`
+            console.log('Token OK')
         } else {
             alert(data.message)
         }
