@@ -19,6 +19,7 @@ const client = new Client({
     }
 });
 
+
 client.connect()
 .then(() => console.log('Conectado ao DB PostgreSQL'))
 .catch(err => {
@@ -54,7 +55,7 @@ const checkToken = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        req.user_id = decoded.user_id
+        req.user_id = decoded.userId
         next()
     } catch (err) {
         res.status(401).json({ error: 'Token inválido'})
@@ -95,12 +96,12 @@ app.get('/games', checkToken, async (req, res) => {
 // Rota para adicionar jogos
 app.post('/games', checkToken, async (req, res) => {
     const { title, plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa } = req.body;
-    
+
     const user_id = req.user_id
 
-    if (!req.user_id) {
-        return res.status(401).json({ error: 'Usuário não autenticado' });
-    }
+ //   if (!req.user_id) {
+ //       return res.status(401).json({ error: 'Usuário não autenticado' });
+//   }
 
     try {
         // Verificar se o jogo já existe
