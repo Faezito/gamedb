@@ -102,6 +102,10 @@ app.post('/games', async (req, res) => {
     const { title, plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa } = req.body;
     const user_id = req.user_id
 
+    if (!req.user_id) {
+        return res.status(401).json({ error: 'Usuário não autenticado' });
+    }
+
     try {
         // Verificar se o jogo já existe
         const queryCheck = 'SELECT * FROM games WHERE title = $1';

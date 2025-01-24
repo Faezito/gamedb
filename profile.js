@@ -224,7 +224,7 @@ function checkToken(){
 
         const data = await response.json()
         if (response.status===200){
-            document.getElementById(`Olá, ${data.email}`)
+            document.getElementById('nameTitle').textContent = `Olá, ${data.username}`
         } else {
             alert(data.message)
         }
