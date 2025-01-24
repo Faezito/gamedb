@@ -1,5 +1,3 @@
-const { response } = require("express");
-
 // buscar os jogos do backend
 fetch('https://gamedb-y1bu.onrender.com/games', {
     method: 'GET',
@@ -132,7 +130,8 @@ document.getElementById('editForm').addEventListener('submit', (e) => {
     fetch(`https://gamedb-y1bu.onrender.com/games/${id}`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(updateGame)
     })
@@ -215,7 +214,7 @@ async function register() {
 
 function checkToken(){
     if(!localStorage.getItem('token')){
-        window.location.href = '/profile.html'
+        window.location.href = '/login.html'
     }
 
     async function getUserData() {
