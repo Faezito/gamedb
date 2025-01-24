@@ -27,6 +27,7 @@ client.connect()
 });
 
 const app = express();
+const port = 10000
 
 app.use(express.static(path.join(__dirname, '/')))
 
