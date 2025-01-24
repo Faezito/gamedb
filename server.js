@@ -98,7 +98,7 @@ app.get('/games', checkToken, async (req, res) => {
 });
 
 // Rota para adicionar jogos
-app.post('/games', async (req, res) => {
+app.post('/games', checkToken, async (req, res) => {
     const { title, plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa } = req.body;
     const user_id = req.user_id
 
@@ -136,6 +136,7 @@ app.post('/games', async (req, res) => {
         ]);
 
         res.status(200).send({ message: 'Jogo adicionado com sucesso!' });
+        console.log(title, user_id)
     } catch (err) {
         console.error('Erro ao inserir jogo:', err);
         res.status(500).send({ error: 'Erro ao adicionar jogo 1' });
