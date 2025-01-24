@@ -27,7 +27,6 @@ client.connect()
 });
 
 const app = express();
-const port = 3000;
 
 app.use(express.static(path.join(__dirname, '/')))
 
@@ -98,7 +97,7 @@ app.get('/games', checkToken, async (req, res) => {
 });
 
 // Rota para adicionar jogos
-app.post('/games', checkToken, async (req, res) => {
+app.post('/games/:user_id', checkToken, async (req, res) => {
     const { title, plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa } = req.body;
     const user_id = req.user_id
 
@@ -251,5 +250,5 @@ app.get('/protected-route', (req,res)=> {
 
 // Iniciar o servidor
 app.listen(port, () => {
-    console.log(`Servidor rodando em ${port}`);
+    console.log(`Servidor rodando`);
 });
