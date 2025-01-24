@@ -78,9 +78,8 @@ fetch('http://gamedb-y1bu.onrender.com/users', {
         title.textContent = data.username
     }
 })
-.catch(err){
-    console.error('Erro ao obter dados do usuário', err)
-}
+.catch(err => console.error('Erro ao obter dados do usuário', err))
+
 
     // adicionar jogos
 
