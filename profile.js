@@ -5,19 +5,13 @@ fetch('https://gamedb-y1bu.onrender.com/games', {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
 }) 
-.then(response => response.json())
-.then(data => console.log(data))
-.catch(error => console.error('Erro:', error))
-
-
-fetch('https://gamedb-y1bu.onrender.com/games')
-    .then(response => {
+.then(response => {
             if (!response.ok) {
                 throw new Error('Erro na resposta da API')
             }
             return response.json()
     })
-    .then(data => {
+.then(data => {
         const container = document.getElementById('games-container');
         data.forEach(game => {
             const gameElement = document.createElement('div');
@@ -59,7 +53,7 @@ fetch('https://gamedb-y1bu.onrender.com/games')
             container.appendChild(gameElement);
         });
     })
-    .catch(error => console.error('Erro ao carregar os jogos:', error));
+.catch(error => console.error('Erro ao carregar os jogos:', error));
 
     // adicionar jogos
 
