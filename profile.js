@@ -163,8 +163,9 @@ function checkToken(){
 
     getUserData()
 
-    document.getElementById('logoutButton').addEventListener('click', () => {
-        localStorage.removeItem('token')
-        window.location.href = '/index.html'
-    })
 }
+
+document.getElementById('logoutButton').addEventListener('click', () => {
+    localStorage.removeItem('token')
+    window.location.href = '/index.html'
+})

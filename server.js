@@ -33,11 +33,6 @@ app.use(express.static(path.join(__dirname, '/')))
 
 
 //Habilitando fontes do Google
-app.use((req, res, next) => {
-    res.setHeader("Content-Security-Policy", "default-src 'none'; font-src 'self' https://fonts.gstatic.com;");
-    next();
-});
-
 app.use(helmet.contentSecurityPolicy({
     directives: {
         defaultSrc: ["'self'"],
@@ -59,7 +54,7 @@ const checkToken = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        req.user = decoded
+        req.user_id = decoded.user_id
         next()
     } catch (err) {
         res.status(401).json({ error: 'Token inválido'})
@@ -100,6 +95,7 @@ app.get('/games', checkToken, async (req, res) => {
 // Rota para adicionar jogos
 app.post('/games', checkToken, async (req, res) => {
     const { title, plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa } = req.body;
+    
     const user_id = req.user_id
 
     if (!req.user_id) {
