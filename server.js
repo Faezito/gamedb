@@ -171,7 +171,7 @@ app.post('/register', async(req,res) => {
 app.post('/login', async(req, res)=> {
     const {username, pass} = req.body
 
-    if(!email || !pass) {
+    if(!username || !pass) {
         return res.status(400).json({message:'Usuário ou senha incorretos.'})
     }
 
