@@ -179,13 +179,13 @@ app.post('/login', async(req, res)=> {
         const user = await client.query('SELECT * FROM users WHERE username = $1', [username])
 
         if (user.rows.length===0){
-            res.status(400).json({message: 'Usuário não encontrado.'})
+            return res.status(400).json({message: 'Usuário não encontrado.'})
         }
 
         const validPass = await bcrypt.compare(pass, user.rows[0].pass)
 
         if(!validPass){
-            return req.status(400).json({message: 'Usuário ou senha incorretos.'})
+            return res.status(400).json({message: 'Usuário ou senha incorretos.'})
         }
 
         const token = jwt.sign(
