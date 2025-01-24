@@ -98,7 +98,7 @@ app.get('/games', checkToken, async (req, res) => {
 });
 
 // Rota para adicionar jogos
-app.post('/games/:user_id', checkToken, async (req, res) => {
+app.post('/games', checkToken, async (req, res) => {
     const { title, plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa } = req.body;
     const user_id = req.user_id
 
@@ -108,8 +108,8 @@ app.post('/games/:user_id', checkToken, async (req, res) => {
 
     try {
         // Verificar se o jogo já existe
-        const queryCheck = 'SELECT * FROM games WHERE title = $1';
-        const result = await client.query(queryCheck, [title]);
+        const queryCheck = 'SELECT * FROM games WHERE title = $1 AND user_id = $2';
+        const result = await client.query(queryCheck, [title, user_id]);
 
         if (result.rows.length > 0) {
             return res.status(400).json({ error: 'Jogo já adicionado' });
@@ -139,7 +139,7 @@ app.post('/games/:user_id', checkToken, async (req, res) => {
         console.log(title, user_id)
     } catch (err) {
         console.error('Erro ao inserir jogo:', err);
-        res.status(500).send({ error: 'Erro ao adicionar jogo 1' });
+        res.status(500).send({ error: 'Erro ao adicionar jogo.', details: err.message });
     }
 });
 
@@ -231,21 +231,11 @@ app.post('/login', async(req, res)=> {
     }
 })
 
-app.get('/protected-route', (req,res)=> {
-    const token = req.headers['authorization']
+//rota protegida
 
-    if(!token){
-        return res.status(403).json({message: 'Token necessário'})
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if(err){
-            return res.status(401).json({message: 'Token inválido'})
-        }
-
-        res.json({message: 'Bem-vindo à rota protegida!', user: decoded})
+app.get('/protected-route', checkToken, (req,res)=> {
+        res.json({message: 'Bem-vindo à rota protegida!', user: req.user_id})
     })
-})
 
 
 
