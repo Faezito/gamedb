@@ -141,7 +141,7 @@ app.post('/games', checkToken, async (req, res) => {
 });
 
 // Rota para editar jogo
-app.put('/games/:id', async (req, res) => {
+app.put('/games/:id', checkToken, async (req, res) => {
     const { id } = req.params;
     const { zerado, finishDate, platina, platinaDate, nota, capa } = req.body;
     const user_id = req.user_id
@@ -184,7 +184,7 @@ app.post('/register', async(req,res) => {
             return res.status(400).json({message: 'O usuário já existe.'})
         }
 
-        const salt = await bcrypt.genSalt(10)
+        const salt = await bcrypt.genSalt(5)
         const senha = await bcrypt.hash(pass, salt)
 
         await client.query('INSERT INTO users (username, name, email, pass) VALUES ($1, $2, $3, $4)', [username, name, email, senha]) 
