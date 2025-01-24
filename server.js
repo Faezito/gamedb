@@ -49,6 +49,24 @@ app.use(helmet.contentSecurityPolicy({
     }
 }))
 
+
+// Verificar TOKEN
+
+const checkToken = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1]
+
+    if(!token) return res.status(401).json({error:'Acesso negado.'})
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        req.user = decoded
+        next()
+    } catch (err) {
+        res.status(401).json({ error: 'Token inválido'})
+    }
+}
+
+
 // Habilitar CORS e body parser
 app.use(cors({
     origin: 'https://gamedb-y1bu.onrender.com'    
@@ -68,9 +86,11 @@ app.get('/profile', (req,res) => {
 })
 
 // Rota para buscar os jogos
-app.get('/games', async (req, res) => {
+app.get('/games', checkToken, async (req, res) => {
+    const user_id = req.user_id
+
     try {
-        const result = await client.query('SELECT * FROM games');
+        const result = await client.query('SELECT * FROM games WHERE user_id = $1', [user_id]);
         res.json(result.rows);
     } catch (err) {
         res.status(500).send({ message: 'Erro ao buscar jogos', error: err });
@@ -80,6 +100,7 @@ app.get('/games', async (req, res) => {
 // Rota para adicionar jogos
 app.post('/games', async (req, res) => {
     const { title, plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa } = req.body;
+    const user_id = req.user_id
 
     try {
         // Verificar se o jogo já existe
@@ -91,8 +112,8 @@ app.post('/games', async (req, res) => {
         }
 
         const queryInsert = `
-            INSERT INTO games (title, plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            INSERT INTO games (title, plataforma, genre, release_date, description, zerado, finishDate, platina, platinaDate, nota, capa, user_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         `;
 
         await client.query(queryInsert, [
@@ -106,7 +127,8 @@ app.post('/games', async (req, res) => {
             platina ? true : false, 
             platinaDate || null, 
             nota, 
-            capa
+            capa,
+            user_id
         ]);
 
         res.status(200).send({ message: 'Jogo adicionado com sucesso!' });
@@ -119,13 +141,14 @@ app.post('/games', async (req, res) => {
 // Rota para editar jogo
 app.put('/games/:id', async (req, res) => {
     const { id } = req.params;
-    const { zerado, finishDate, platina, platinaDate, nota } = req.body;
+    const { zerado, finishDate, platina, platinaDate, nota, capa } = req.body;
+    const user_id = req.user_id
 
     try {
         const queryUpdate = `
             UPDATE games
-            SET zerado = $1, finishDate = $2, platina = $3, platinaDate = $4, nota = $5
-            WHERE id = $6
+            SET zerado = $1, finishDate = $2, platina = $3, platinaDate = $4, nota = $5, capa = $6
+            WHERE id = $7 AND user_id = $8
         `;
 
         await client.query(queryUpdate, [
@@ -134,7 +157,9 @@ app.put('/games/:id', async (req, res) => {
             platina ? true : false, 
             platinaDate || null, 
             nota, 
-            id
+            capa,
+            id,
+            user_id
         ]);
 
         res.send('Jogo atualizado com sucesso!');

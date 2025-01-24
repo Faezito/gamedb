@@ -1,5 +1,17 @@
+const { response } = require("express");
 
 // buscar os jogos do backend
+fetch('https://gamedb-y1bu.onrender.com/games', {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+}) 
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Erro:', error))
+
+
 fetch('https://gamedb-y1bu.onrender.com/games')
     .then(response => {
             if (!response.ok) {
